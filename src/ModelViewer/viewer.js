@@ -89,7 +89,6 @@ export default function viewer(canvasRef) {
     composer.addPass(ssaoPass);
 
     let mixer = undefined
-    let activeAction = null
     
     function update() {
         ssao ? composer.render() : renderer.render(scene, camera);
@@ -121,6 +120,28 @@ export default function viewer(canvasRef) {
             
         })
         
-        update();
-        
+    update();
+
+    const setModel = (file) => {
+        gltfLoader.load(
+            URL.createObjectURL(file),
+            (gltf) => {
+                
+                gltf.scene.traverse(function(node) {
+                    if (node.isMesh) {
+                        node.receiveShadow = true;
+                        node.castShadow = true;
+                    }
+                } );
+                
+                mixer = new THREE.AnimationMixer(gltf.scene)
+                
+                mixer.clipAction(gltf.animations[0]).play()
+                
+                scene.add(gltf.scene)
+                
+            })
     }
+        
+    return {setModel}
+}

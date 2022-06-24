@@ -6,7 +6,10 @@ function ModelViewer(props) {
 
     useEffect(() => {
         const context = canvasRef.current
-        viewer(context)
+        const view = viewer(context)
+        if (props.model) {
+            view.setModel(props.model)
+        }
     });
 
     return (

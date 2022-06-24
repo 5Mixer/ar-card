@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import ModelViewer from '../ModelViewer/ModelViewer';
+import FileUploader from '../FileUploader';
 import './cardPanel.css'
 
 function CardPanel(props) {
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [model, setModel] = useState(null);
+
     return (
         <div>
             <h1>{props.character.name}</h1>
@@ -16,11 +20,14 @@ function CardPanel(props) {
             </div>
 
             <div>
-                <button>Upload Model</button>
                 <button>View Model in AR</button>
+
+                <FileUploader
+                    onFileSelect={(file) => setModel(file)}
+                />
             </div>
 
-            <ModelViewer></ModelViewer>
+            <ModelViewer model={model}></ModelViewer>
         </div>
     );
 }
