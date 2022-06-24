@@ -2,71 +2,127 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-export default function viewer(canvasRef) {
+    import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+    import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 
+export default function viewer(canvasRef) {
+    
     const renderer = new THREE.WebGLRenderer({
         canvas: canvasRef,
-        antialias: false,
+        antialias: true,
     });
     renderer.setSize(500, 500);
-
-    const scene = new THREE.Scene();
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, .5)
-    scene.add(ambientLight)
-
-
-
-    const light2 = new THREE.PointLight(0xffffff, 1)
-    light2.position.set(30, 30, -30)
+    renderer.shadowMap.enabled = true;
     
-    scene.add(light2)
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x111111);
+    
+    const ambientLight = new THREE.AmbientLight(0xffffff, .7)
+    scene.add(ambientLight)
+    
+    
+    const point = new THREE.PointLight(0xffffff, .8)
+    point.position.set(-15, 20, -10)
+    // point.castShadow = true
+    
+    // scene.add(point);
+    
+    const dirLight = new THREE.DirectionalLight(0xffffff, .8)
+    dirLight.position.set(3, 3, -3)
+    dirLight.castShadow = true
 
-
+    dirLight.shadow.camera.top = 5;
+    dirLight.shadow.camera.bottom = -5;
+    dirLight.shadow.camera.left = -5;
+    dirLight.shadow.camera.right = 5;
+    dirLight.shadow.camera.near = .1;
+    dirLight.shadow.camera.far = 15;
+    dirLight.shadow.bias = -0.003;
+    dirLight.shadow.mapSize.set(1024, 1024)
+    
+    scene.add(dirLight)
+    
+    
     const camera = new THREE.PerspectiveCamera(75, canvasRef.width / canvasRef.height, 0.1, 1000 );
     camera.position.set(-5, 8, -10)
     camera.lookAt(0,0,0)
-
-
-    const controls = new OrbitControls(camera, canvasRef)
-    // controls.enableDamping = true
-    controls.target.set(0, 1, 0)
-
-    // Create meshes, materials, etc.
-
-    // const geometry = new THREE.BoxGeometry(1,1,1);
-    // const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    // const cube = new THREE.Mesh(geometry, material);
     
+    
+    const controls = new OrbitControls(camera, canvasRef)
+    controls.enablePan = false;
+    controls.minDistance = 5;
+    controls.maxDistance = 60; 
+    // controls.target.set(0, 1, 0)
+    
+    // Create meshes, materials, etc.
+    
+    const geometry = new THREE.BoxGeometry(10,10,10);
+    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    const cube = new THREE.Mesh(geometry, material);
+    cube.castShadow=true
     // scene.add(cube);
+    
+    
+    var floorgeometry = new THREE.CircleGeometry(15, 50);
+    var floormaterial = new THREE.MeshPhongMaterial({
+        color: 0xdddddd,
+        shininess: 20,
+        wireframe: false
+    });
+    var floor = new THREE.Mesh(floorgeometry, floormaterial);
+    //   floor.material.side = THREE.DoubleSide;
+    floor.rotation.x = -Math.PI * 0.5;
+    floor.position.z = 0;
+    floor.position.x = 0;
+    floor.position.y = 0;
+    floor.receiveShadow = true;
+    scene.add(floor);
 
+
+    const composer = new EffectComposer( renderer );
+
+    const ssao = false;
+    const ssaoPass = new SSAOPass( scene, camera, canvasRef.width, canvasRef.height );
+    ssaoPass.kernelRadius = 1;
+    ssaoPass.minDistance = .0000001;
+    ssaoPass.maxDistance = 0.0001;
+    composer.addPass(ssaoPass);
+    
+    
     function update() {
-        renderer.render(scene, camera);
-
+        ssao ? composer.render() : renderer.render(scene, camera);
+        
         requestAnimationFrame(update);
     }
-
+    
     const gltfLoader = new GLTFLoader()
-
+    
     gltfLoader.load(
-    process.env.PUBLIC_URL + '/models/pig/pig.gltf',
-    (gltf) => {
-        gltf.scene.scale.set(7,7,7)
-
-        // mixer = new THREE.AnimationMixer(gltf.scene)
-
-        // const animationAction = mixer.clipAction((gltf as any).animations[0])
-        // animationActions.push(animationAction)
-        // animationsFolder.add(animations, 'default')
-        // activeAction = animationActions[0]
-
-
-        scene.add(gltf.scene)
-
-    })
-
-
-
-    update();
-
-}
+        process.env.PUBLIC_URL + '/models/pig/pig.gltf',
+        (gltf) => {
+            gltf.scene.scale.set(7,7,7)
+            
+            gltf.scene.traverse(function(node) {
+                if (node.isMesh) {
+                    node.receiveShadow = true;
+                    node.castShadow = true;
+                }
+            } );
+            
+            // mixer = new THREE.AnimationMixer(gltf.scene)
+            
+            // const animationAction = mixer.clipAction((gltf as any).animations[0])
+            // animationActions.push(animationAction)
+            // animationsFolder.add(animations, 'default')
+            // activeAction = animationActions[0]
+            
+            
+            scene.add(gltf.scene)
+            
+        })
+        
+        
+        
+        update();
+        
+    }
