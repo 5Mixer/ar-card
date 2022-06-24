@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Card from './Card'
+import CardPanel from './CardPanel'
 import './App.css';
 
 function App() {
@@ -29,23 +30,47 @@ function App() {
       ]
     },
     {
-      name: "The Soldier",
+      name: "The Tough Soldier",
+      description: "A nation sponsored threat",
+      health: 20,
+      attack: 4
+    },
+    {
+      name: "The Fast Soldier",
       description: "A nation sponsored threat",
       health: 15,
-      attack: 4
+      attack: 2
+    },
+    {
+      name: "The Unfit Soldier",
+      description: "A nation sponsored threat",
+      health: 20,
+      attack: 1
     }
   ]
 
   const [selectedCard, setSelectedCard] = useState(null);
 
+  function newCharacter() {}
+
   return (
     <div className="App">
       <h1>Cards</h1>
-      <section className="deck">
-        {cards.map(function(character, i) {
-          return <Card character={character} key={character.name} selected={selectedCard === character.name} onClick={() => selectedCard === character.name ? setSelectedCard(null) : setSelectedCard(character.name)}/>;
-        })}
-      </section>
+      <div className="cardPanelRoot">
+        <section className="deck">
+          {cards.map(function(character, i) {
+            return <Card character={character} key={character.name} selected={selectedCard == i} onClick={() => selectedCard === i ? setSelectedCard(null) : setSelectedCard(i)}/>;
+          })}
+          <Card character={{name:"New Character", health:"_", attack:"_"}} onClick={() => newCharacter()}/>
+        </section>
+        {
+          (selectedCard != null) ? (
+            <section className="cardPanel">
+              <CardPanel character={cards[selectedCard]} setHealth={(health) => cards[selectedCard].health = health}/>
+            </section>
+          ) : null
+        }
+      </div>
     </div>
   );
 }

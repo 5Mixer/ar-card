@@ -2,12 +2,21 @@
   --card-bg: #2e2f30;
   --bg: #2c2c31;
   --fg: #ebe9e9;
+  --accent: #61c454;
   
   margin: 1em;
 }
 
+.cardPanelRoot {
+  display: flex;
+  gap: 1em;
+}
+
 .deck {
   display: flex;
+  flex-wrap: wrap;
+
+  width: 100%;
 
   border-radius: 1em;
 
@@ -15,4 +24,11 @@
   opacity: 0.8;
   background-size: 16px 16px;
   background-image:  repeating-linear-gradient(0deg, #1c192c, #1c192c 0.8px, #050508 0.8px, #050508);
+}
+
+.cardPanel {
+  width: 100%;
+  background-color: #050508;
+  border-radius: 1em;
+  padding: 1em;
 }
