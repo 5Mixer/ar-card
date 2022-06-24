@@ -31,12 +31,12 @@ export default function viewer(canvasRef) {
     dirLight.position.set(3, 3, -3)
     dirLight.castShadow = true
 
-    dirLight.shadow.camera.top = 5;
-    dirLight.shadow.camera.bottom = -5;
-    dirLight.shadow.camera.left = -5;
-    dirLight.shadow.camera.right = 5;
-    dirLight.shadow.camera.near = .1;
-    dirLight.shadow.camera.far = 15;
+    dirLight.shadow.camera.top = 2;
+    dirLight.shadow.camera.bottom = -2;
+    dirLight.shadow.camera.left = -2;
+    dirLight.shadow.camera.right = 2;
+    dirLight.shadow.camera.near = .02;
+    dirLight.shadow.camera.far = 10;
     dirLight.shadow.bias = -0.003;
     dirLight.shadow.mapSize.set(1024, 1024)
     
@@ -44,14 +44,14 @@ export default function viewer(canvasRef) {
     
     
     const camera = new THREE.PerspectiveCamera(75, canvasRef.width / canvasRef.height, 0.1, 1000 );
-    camera.position.set(-5, 8, -10)
+    camera.position.set(-1, 1, -2)
     camera.lookAt(0,0,0)
     
     
     const controls = new OrbitControls(camera, canvasRef)
     controls.enablePan = false;
-    controls.minDistance = 5;
-    controls.maxDistance = 60; 
+    controls.minDistance = 1;
+    controls.maxDistance = 10; 
     // controls.target.set(0, 1, 0)
     
     // Create meshes, materials, etc.
@@ -63,7 +63,7 @@ export default function viewer(canvasRef) {
     // scene.add(cube);
     
     
-    var floorgeometry = new THREE.CircleGeometry(15, 50);
+    var floorgeometry = new THREE.CircleGeometry(2, 50);
     var floormaterial = new THREE.MeshPhongMaterial({
         color: 0xdddddd,
         shininess: 20,
@@ -87,10 +87,15 @@ export default function viewer(canvasRef) {
     ssaoPass.minDistance = .0000001;
     ssaoPass.maxDistance = 0.0001;
     composer.addPass(ssaoPass);
-    
+
+    let mixer = undefined
+    let activeAction = null
     
     function update() {
         ssao ? composer.render() : renderer.render(scene, camera);
+    
+        if (mixer)
+            mixer.update(1/60)
         
         requestAnimationFrame(update);
     }
@@ -100,7 +105,6 @@ export default function viewer(canvasRef) {
     gltfLoader.load(
         process.env.PUBLIC_URL + '/models/pig/pig.gltf',
         (gltf) => {
-            gltf.scene.scale.set(7,7,7)
             
             gltf.scene.traverse(function(node) {
                 if (node.isMesh) {
@@ -109,19 +113,13 @@ export default function viewer(canvasRef) {
                 }
             } );
             
-            // mixer = new THREE.AnimationMixer(gltf.scene)
+            mixer = new THREE.AnimationMixer(gltf.scene)
             
-            // const animationAction = mixer.clipAction((gltf as any).animations[0])
-            // animationActions.push(animationAction)
-            // animationsFolder.add(animations, 'default')
-            // activeAction = animationActions[0]
-            
+            mixer.clipAction(gltf.animations[0]).play()
             
             scene.add(gltf.scene)
             
         })
-        
-        
         
         update();
         
