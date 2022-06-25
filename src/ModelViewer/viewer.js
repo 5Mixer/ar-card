@@ -2,30 +2,12 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-    import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-    import { SSAOPass } from 'three/examples/jsm/postprocessing/SSAOPass.js';
 
-export default function viewer(canvasRef) {
-    
-    const renderer = new THREE.WebGLRenderer({
-        canvas: canvasRef,
-        antialias: true,
-    });
-    renderer.setSize(500, 500);
-    renderer.shadowMap.enabled = true;
-    
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111111);
     
     const ambientLight = new THREE.AmbientLight(0xffffff, .7)
     scene.add(ambientLight)
-    
-    
-    const point = new THREE.PointLight(0xffffff, .8)
-    point.position.set(-15, 20, -10)
-    // point.castShadow = true
-    
-    // scene.add(point);
     
     const dirLight = new THREE.DirectionalLight(0xffffff, .8)
     dirLight.position.set(3, 3, -3)
@@ -43,34 +25,13 @@ export default function viewer(canvasRef) {
     scene.add(dirLight)
     
     
-    const camera = new THREE.PerspectiveCamera(75, canvasRef.width / canvasRef.height, 0.1, 1000 );
-    camera.position.set(-1, 1, -2)
-    camera.lookAt(0,0,0)
-    
-    
-    const controls = new OrbitControls(camera, canvasRef)
-    controls.enablePan = false;
-    controls.minDistance = 1;
-    controls.maxDistance = 10; 
-    // controls.target.set(0, 1, 0)
-    
-    // Create meshes, materials, etc.
-    
-    const geometry = new THREE.BoxGeometry(10,10,10);
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    const cube = new THREE.Mesh(geometry, material);
-    cube.castShadow=true
-    // scene.add(cube);
-    
-    
-    var floorgeometry = new THREE.CircleGeometry(2, 50);
+    var floorgeometry = new THREE.CircleGeometry(2, 80);
     var floormaterial = new THREE.MeshPhongMaterial({
         color: 0xdddddd,
-        shininess: 20,
-        wireframe: false
+        shininess: 20
     });
-    var floor = new THREE.Mesh(floorgeometry, floormaterial);
-    //   floor.material.side = THREE.DoubleSide;
+
+    const floor = new THREE.Mesh(floorgeometry, floormaterial);
     floor.rotation.x = -Math.PI * 0.5;
     floor.position.z = 0;
     floor.position.x = 0;
@@ -78,23 +39,39 @@ export default function viewer(canvasRef) {
     floor.receiveShadow = true;
     scene.add(floor);
 
+    let model = null
 
-    const composer = new EffectComposer( renderer );
 
-    const ssao = false;
-    const ssaoPass = new SSAOPass( scene, camera, canvasRef.width, canvasRef.height );
-    ssaoPass.kernelRadius = 1;
-    ssaoPass.minDistance = .0000001;
-    ssaoPass.maxDistance = 0.0001;
-    composer.addPass(ssaoPass);
 
-    let mixer = undefined
+export default function viewer(canvasRef) {
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvasRef,
+        antialias: true,
+    });
+
+    renderer.setSize(canvasRef.clientWidth, canvasRef.clientHeight);
+    renderer.shadowMap.enabled = true;
+
+
+    const camera = new THREE.PerspectiveCamera(75, canvasRef.clientWidth / canvasRef.clientHeight, 0.1, 1000 );
+    camera.position.set(-1, 1, -2)
     
+    const controls = new OrbitControls(camera, canvasRef)
+    controls.enablePan = false;
+    controls.minDistance = 1;
+    controls.maxDistance = 10; 
+  
+    var mixer = undefined
+
+    const clock = new THREE.Clock()
+    clock.start();
+
     function update() {
-        ssao ? composer.render() : renderer.render(scene, camera);
+        const delta = clock.getDelta();
+        renderer.render(scene, camera)
     
         if (mixer)
-            mixer.update(1/60)
+            mixer.update(delta)
         
         requestAnimationFrame(update);
     }
@@ -104,28 +81,42 @@ export default function viewer(canvasRef) {
     gltfLoader.load(
         process.env.PUBLIC_URL + '/models/pig/pig.gltf',
         (gltf) => {
-            
+            if (model) {
+                model.traverse(function(node) {
+                    if (node.isMesh) {
+                        if (model.geometry)
+                            model.geometry.dispose()
+                        if (model.material)
+                            model.material.dispose()
+                    }
+                });
+                scene.remove(model)
+            }
+            model = gltf.scene
             gltf.scene.traverse(function(node) {
                 if (node.isMesh) {
                     node.receiveShadow = true;
                     node.castShadow = true;
                 }
-            } );
+            });
             
             mixer = new THREE.AnimationMixer(gltf.scene)
-            
             mixer.clipAction(gltf.animations[0]).play()
-            
             scene.add(gltf.scene)
-            
         })
         
     update();
 
     const setModel = (file) => {
+        const url = URL.createObjectURL(file);
         gltfLoader.load(
-            URL.createObjectURL(file),
+            url,
             (gltf) => {
+                URL.revokeObjectURL(url);
+
+                if (model) {
+                    scene.remove(model)
+                }
                 
                 gltf.scene.traverse(function(node) {
                     if (node.isMesh) {
@@ -140,8 +131,27 @@ export default function viewer(canvasRef) {
                 
                 scene.add(gltf.scene)
                 
-            })
+            }, function onProgress(){  }, function onError(){ 
+                URL.revokeObjectURL(url);
+            });
     }
-        
-    return {setModel}
+
+    const dispose = () => {
+        renderer.dispose()
+        dirLight.shadow.dispose()
+        floor.geometry.dispose()
+        floormaterial.dispose()
+        scene.remove(model)
+        scene.traverse(function(node) {
+            if (node.isMesh) {
+                node.geometry.dispose()
+                node.material.dispose()
+                // node.dispose()
+            }
+        })
+        console.log(renderer.info)
+
+    }
+
+    return {setModel, dispose}
 }

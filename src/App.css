@@ -15,13 +15,8 @@
 .deck {
   display: flex;
   flex-wrap: wrap;
-  /* justify-content: space-around; */
-  margin: auto 0;
-
   width: 100%;
-
   border-radius: 1em;
-
   background-color: #050508;
   opacity: 0.8;
   background-size: 16px 16px;
