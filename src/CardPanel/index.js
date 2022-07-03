@@ -23,13 +23,14 @@ function CardPanel(props) {
         });
     }
     useEffect(() => {
-        setModel(props.character.model.data)
+        if (props.character.model)
+            setModel(props.character.model.data)
     }, [props.character.model])
 
     return (
         <div>
-            <h1 class="cardName">{props.character.name}</h1>
-            <input type="text" value={props.character.name} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
+            <h1 className="cardName">{props.character.name}</h1>
+            <input type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
             <div>
                 ❤️
                 <input type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />

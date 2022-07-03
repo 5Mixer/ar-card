@@ -92,7 +92,15 @@ function App() {
 
   useEffect(getCards, [])
   
-  function newCharacter() {}
+  function newCharacter() {
+    fetch('/api/cards', {method: "POST"})
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(card) {
+      setCards([...cards, {id: card.id, name: "", model: null}])
+    });
+  }
   
   return (
     <div className="App">
