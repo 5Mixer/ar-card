@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from './Card'
 import CardPanel from './CardPanel'
 import './App.css';
 
 function App() {
-  const cards = [
+  /*const cards = [
     {
       name: "The Doctor",
       description: "Heals where others harm",
@@ -47,32 +47,56 @@ function App() {
       health: 20,
       attack: 1
     }
-  ]
-
+  ]*/  
   const [selectedCard, setSelectedCard] = useState(null);
+  const [cards, setCards] = useState([])
+  
+  const getCards = () => {
+    const controller = new AbortController()
+    const signal = controller.signal
 
+    fetch('/api/cards', {signal})
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(cards) {
+      setCards(cards)
+    })
+    .catch(function(err) {
+      if (err.name !== 'AbortError')
+        throw err;
+    });
+
+    return () => {
+      controller.abort()
+    };
+  }
+
+  useEffect(getCards, [])
+  
   function newCharacter() {}
-
+  
   return (
     <div className="App">
       <h1>Cards</h1>
       <div className="cardPanelRoot">
         <section className="deck">
           {cards.map(function(character, i) {
-            return <Card character={character} key={character.name} selected={selectedCard == i} onClick={() => selectedCard === i ? setSelectedCard(null) : setSelectedCard(i)}/>;
+            return <Card character={character} key={character.id} selected={selectedCard === i} onClick={() => selectedCard === i ? setSelectedCard(null) : setSelectedCard(i)}/>;
           })}
           <Card character={{name:"New Character", health:"_", attack:"_"}} onClick={() => newCharacter()}/>
         </section>
-        {
-          (selectedCard != null) ? (
-            <section className="cardPanel">
-              <CardPanel character={cards[selectedCard]} setHealth={(health) => cards[selectedCard].health = health}/>
-            </section>
+        
+        { (selectedCard != null) ? (
+          <section className="cardPanel">
+            <CardPanel character={cards[selectedCard]} setHealth={(health) => cards[selectedCard].health = health}/>
+          </section>
           ) : null
         }
+        </div>
       </div>
-    </div>
-  );
-}
-
-export default App;
+      );
+    }
+    
+    export default App;
+    

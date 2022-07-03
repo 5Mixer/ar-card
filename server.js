@@ -12,9 +12,60 @@ app.use(fileUpload({
 
 app.use(express.static('public'));
 
-app.post('/api/model', (req, res) => {
+const sqlite3 = require('sqlite3').verbose()
+const db = new sqlite3.Database("db.db")
+
+db.serialize(() => {
+    db.run("CREATE TABLE IF NOT EXISTS cards (id INTEGER NOT NULL PRIMARY KEY, name TEXT, model BLOB);");
+
+    db.each("SELECT rowid AS id, name FROM cards", (err, row) => {
+        console.log(row);
+    });
+})
+
+app.post('/api/models', (req, res) => {
     console.log("Received", req.files);
     res.status(200).end()
+});
+
+app.put('/api/cards/:id', (req, res) => {
+    const model = req.files.model;
+    const name = req.body.name;
+
+    db.run(
+        "UPDATE cards SET name = (?), model = (?) WHERE rowid = (?);",
+        name,
+        model,
+        req.params.id,
+        function(err) {
+            if (err) {
+                res.status(500).end("Failed to update card", err);
+            } else {
+                res.status(200).end();
+            }
+        });
+});
+
+app.get('/api/cards', (req, res) => {
+    db.all("SELECT * FROM cards", function(err, cards) {
+        if (err) {
+            res.status(500).end("Unable to get cards from database", err);
+        } else {
+            res.json(cards);
+        }
+    });
+});
+
+app.post('/api/cards', (req, res) => {
+    db.run("INSERT INTO cards (name) VALUES (?)", null, function(err) {
+        if (err) {
+            res.status(500).end("Unable to insert card into database", err);
+        } else {
+            res.json({
+                id: this.lastID
+            });
+        }
+    });
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

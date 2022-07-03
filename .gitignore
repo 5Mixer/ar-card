@@ -127,3 +127,4 @@ yarn-debug.log*
 yarn-error.log*
 public/cards/
 public/models/
+db.db

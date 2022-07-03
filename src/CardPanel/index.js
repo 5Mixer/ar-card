@@ -14,7 +14,7 @@ function CardPanel(props) {
 
 		formData.append('File', file);
 		fetch(
-			'/api/model',
+			'/api/card',
 			{
 				method: 'POST',
 				body: formData,
