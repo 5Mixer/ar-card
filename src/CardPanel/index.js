@@ -7,17 +7,17 @@ function CardPanel(props) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [model, setModel] = useState(null);
 
-    const onModelFileSelect = (file) => {      
+    const saveCard = () => {      
 		const formData = new FormData();
-		formData.set('model', file);
+		formData.set('model', selectedFile);
         formData.set('name', props.character.name)
 
         const request = new XMLHttpRequest();
         request.open("PUT", `/api/cards/${props.character.id}`);
         request.send(formData);
         request.addEventListener('load', () => {
-            file.arrayBuffer().then((data) => {
-                // setModel(data)
+            selectedFile.arrayBuffer().then((data) => {
+                setModel(data)
                 props.setModel(data)
             })
         });
@@ -42,8 +42,11 @@ function CardPanel(props) {
             <div>
                 <button>View Model in AR</button>
 
-                <FileUploader onFileSelect={onModelFileSelect} />
+                <FileUploader onFileSelect={setSelectedFile} />
+
+                <button onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>
+
 
             <ModelViewer model={model}></ModelViewer>
         </div>

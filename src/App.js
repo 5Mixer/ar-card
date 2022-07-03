@@ -72,6 +72,24 @@ function App() {
     };
   }
 
+  const setSelectedModel = (model) => {
+    setCards(cards.map(card => {
+      if (card.id === selectedCard) {
+        return {...card, model}
+      }
+      return {...card}
+    }))
+  }
+
+  const setSelectedName = (name) => {
+    setCards(cards.map(card => {
+      if (card.id === selectedCard) {
+        return {...card, name}
+      }
+      return {...card}
+    }))
+  }
+
   useEffect(getCards, [])
   
   function newCharacter() {}
@@ -91,19 +109,8 @@ function App() {
           <section className="cardPanel">
             <CardPanel
               character={cards.filter((card) => card.id === selectedCard)[0]}
-              setHealth={(health) => cards[selectedCard].health = health}
-              setModel={(model) => setCards(cards.map(card => {
-                  if (card.id === selectedCard) {
-                    return {...card, model}
-                  }
-                  return {...card}
-                }))}
-              setName={(name) => setCards(cards.map(card => {
-                  if (card.id === selectedCard) {
-                    return {...card, name}
-                  }
-                  return {...card}
-                }))}
+              setModel={setSelectedModel}
+              setName={setSelectedName}
             />
           </section>
           ) : null

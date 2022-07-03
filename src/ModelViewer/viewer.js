@@ -23,7 +23,7 @@ function initialiseScene() {
     dirLight.shadow.camera.right = 2;
     dirLight.shadow.camera.near = .02;
     dirLight.shadow.camera.far = 10;
-    dirLight.shadow.bias = -0.003;
+    dirLight.shadow.bias = -0.005;
     dirLight.shadow.mapSize.set(1024, 1024)
     
     scene.add(dirLight)
@@ -60,6 +60,7 @@ export default function viewer(canvasRef, gltfBuffer) {
     const controls = new OrbitControls(camera, canvasRef)
     // controls.autoRotate = true
     // controls.autoRotateSpeed = 3
+    controls.target = new THREE.Vector3(0, 1, 0);
     controls.enableDamping = true
     controls.dampingFactor = .3
     controls.enablePan = false;
@@ -87,7 +88,6 @@ export default function viewer(canvasRef, gltfBuffer) {
                     }
                 }
             });
-            scene.remove(model)
         }
         model = gltf.scene;
         
@@ -104,10 +104,12 @@ export default function viewer(canvasRef, gltfBuffer) {
         }
         
         scene.add(gltf.scene)
-        controls.target = new THREE.Box3().setFromObject(gltf.scene).getCenter(new THREE.Vector3())
+        // controls.target = new THREE.Box3().setFromObject(gltf.scene).getCenter(new THREE.Vector3())
+        controls.target = new THREE.Vector3(0, 1, 0);
     }
 
     const setModelFromBlob = (blob) => {
+        scene.remove(model)
         gltfLoader.parse(blob, '/', (gltf) => {
             onLoadScene(gltf); });
     }

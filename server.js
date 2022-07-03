@@ -29,6 +29,22 @@ app.post('/api/models', (req, res) => {
 });
 
 app.put('/api/cards/:id', (req, res) => {
+    if (!req.files || !req.files.model) {
+        // Only update textual fields
+        const name = req.body.name;
+        db.run(
+            "UPDATE cards SET name = (?) WHERE rowid = (?);",
+            name,
+            req.params.id,
+            function(err) {
+                if (err) {
+                    res.status(500).end("Failed to update card", err);
+                } else {
+                    res.status(200).end();
+                }
+            });
+        return;
+    }
     const model = req.files.model;
     const name = req.body.name;
 
