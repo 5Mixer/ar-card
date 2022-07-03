@@ -2,3 +2,11 @@ button, input {
     padding: .5em;
     margin: .5em;
 }
+.cardName {
+    word-wrap:break-word;
+    min-height: 1em;
+}
+.cardName:empty::before {
+  content:"";
+  display:inline-block;
+}

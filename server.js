@@ -32,10 +32,15 @@ app.put('/api/cards/:id', (req, res) => {
     const model = req.files.model;
     const name = req.body.name;
 
+    if (model.mimetype !== 'model/gltf+json') {
+        res.status(500).end("Invalid model mime type");
+        return;
+    }
+
     db.run(
         "UPDATE cards SET name = (?), model = (?) WHERE rowid = (?);",
         name,
-        model,
+        model.data,
         req.params.id,
         function(err) {
             if (err) {

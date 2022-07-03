@@ -81,15 +81,30 @@ function App() {
       <h1>Cards</h1>
       <div className="cardPanelRoot">
         <section className="deck">
-          {cards.map(function(character, i) {
-            return <Card character={character} key={character.id} selected={selectedCard === i} onClick={() => selectedCard === i ? setSelectedCard(null) : setSelectedCard(i)}/>;
+          {cards.map(function(character) {
+            return <Card character={character} key={character.id} selected={selectedCard === character.id} onClick={() => selectedCard === character.id ? setSelectedCard(null) : setSelectedCard(character.id)}/>;
           })}
           <Card character={{name:"New Character", health:"_", attack:"_"}} onClick={() => newCharacter()}/>
         </section>
         
         { (selectedCard != null) ? (
           <section className="cardPanel">
-            <CardPanel character={cards[selectedCard]} setHealth={(health) => cards[selectedCard].health = health}/>
+            <CardPanel
+              character={cards.filter((card) => card.id === selectedCard)[0]}
+              setHealth={(health) => cards[selectedCard].health = health}
+              setModel={(model) => setCards(cards.map(card => {
+                  if (card.id === selectedCard) {
+                    return {...card, model}
+                  }
+                  return {...card}
+                }))}
+              setName={(name) => setCards(cards.map(card => {
+                  if (card.id === selectedCard) {
+                    return {...card, name}
+                  }
+                  return {...card}
+                }))}
+            />
           </section>
           ) : null
         }

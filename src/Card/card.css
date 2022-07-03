@@ -16,6 +16,14 @@
     border: 0 solid var(--accent);
     border-width: 0;
 }
+.card h2 {
+    word-wrap:break-word;
+    min-height: 1em;
+}
+.card h2:empty::before {
+  content:"";
+  display:inline-block;
+}
 
 .selected {
     border-width: .25em;

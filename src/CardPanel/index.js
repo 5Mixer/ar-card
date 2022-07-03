@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ModelViewer from '../ModelViewer/ModelViewer';
 import FileUploader from '../FileUploader';
 import './cardPanel.css'
@@ -7,31 +7,29 @@ function CardPanel(props) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [model, setModel] = useState(null);
 
-    const onModelFileSelect = (file) => {
-        setModel(file)
-
+    const onModelFileSelect = (file) => {      
 		const formData = new FormData();
+		formData.set('model', file);
+        formData.set('name', props.character.name)
 
-		formData.append('File', file);
-		fetch(
-			'/api/card',
-			{
-				method: 'POST',
-				body: formData,
-			}
-		)
-        .then((response) => response.json())
-        .then((result) => {
-            console.log('Success:', result);
-        })
-        .catch((error) => {
-            console.error('Error:', error);
+        const request = new XMLHttpRequest();
+        request.open("PUT", `/api/cards/${props.character.id}`);
+        request.send(formData);
+        request.addEventListener('load', () => {
+            file.arrayBuffer().then((data) => {
+                // setModel(data)
+                props.setModel(data)
+            })
         });
     }
+    useEffect(() => {
+        setModel(props.character.model.data)
+    }, [props.character.model])
 
     return (
         <div>
-            <h1>{props.character.name}</h1>
+            <h1 class="cardName">{props.character.name}</h1>
+            <input type="text" value={props.character.name} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
             <div>
                 ❤️
                 <input type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />
