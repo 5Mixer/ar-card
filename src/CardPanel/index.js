@@ -7,6 +7,28 @@ function CardPanel(props) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [model, setModel] = useState(null);
 
+    const onModelFileSelect = (file) => {
+        setModel(file)
+
+		const formData = new FormData();
+
+		formData.append('File', file);
+		fetch(
+			'/api/model',
+			{
+				method: 'POST',
+				body: formData,
+			}
+		)
+        .then((response) => response.json())
+        .then((result) => {
+            console.log('Success:', result);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
     return (
         <div>
             <h1>{props.character.name}</h1>
@@ -22,9 +44,7 @@ function CardPanel(props) {
             <div>
                 <button>View Model in AR</button>
 
-                <FileUploader
-                    onFileSelect={(file) => setModel(file)}
-                />
+                <FileUploader onFileSelect={onModelFileSelect} />
             </div>
 
             <ModelViewer model={model}></ModelViewer>
