@@ -8,6 +8,20 @@ var encodeImageURL = function(imageURL, onComplete){
 	image.src = imageURL;
 }
 
+var getPatternImage = function(image) {
+	var canvas = document.createElement('canvas');
+	var context = canvas.getContext('2d')
+	canvas.width = 16;
+	canvas.height = 16;
+
+    context.save();
+    context.clearRect(0,0,canvas.width,canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    context.restore();
+
+    return canvas.toDataURL()
+}
+
 var encodeImage = function(image) {
 	// copy image on canvas
 	var canvas = document.createElement('canvas');
@@ -105,13 +119,18 @@ var buildFullMarker =  function(innerImageURL, pattRatio, size, color, onComplet
 		);
 
 		var imageUrl = canvas.toDataURL()
-		onComplete(imageUrl)
+        onComplete({
+            marker: imageUrl,
+            patternImage: getPatternImage(innerImage)
+        });
 	})
 	innerImage.src = innerImageURL
 }
 
 export default function patternProcessor(file) {
-    buildFullMarker(file, .6, 512, "black", function(outputUrl) {
-        console.log(outputUrl)
+    return new Promise((resolve, reject) => {
+        buildFullMarker(file, .6, 512, "black", function(output) {
+            resolve(output);
+        })
     })
 }

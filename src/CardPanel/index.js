@@ -9,6 +9,9 @@ function CardPanel(props) {
     const [selectedMarkerFile, setSelectedMarkerFile] = useState(null);
     const [model, setModel] = useState(null);
 
+    const [generatedMarker, setGeneratedMarker] = useState(null);
+    const [patternImage, setPatternImage] = useState(null);
+
     const saveCard = () => {      
 		const formData = new FormData();
 		formData.set('model', selectedModelFile);
@@ -30,8 +33,11 @@ function CardPanel(props) {
     }, [props.character.model])
 
     const onSelectMarker = (markerFile) => {
-        setSelectedMarkerFile(markerFile);
-        patternProcessor(URL.createObjectURL(markerFile))
+        setSelectedMarkerFile(URL.createObjectURL(markerFile));
+        patternProcessor(URL.createObjectURL(markerFile)).then((result) => {
+            setGeneratedMarker(result.marker);
+            setPatternImage(result.patternImage);
+        });
     }
 
     return (
@@ -53,6 +59,30 @@ function CardPanel(props) {
 
                 <h3>Upload Card Image/Marker</h3>
                 <FileUploader onFileSelect={onSelectMarker} />
+                {selectedMarkerFile ? (<div className="imageGrid">
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Uploaded Marker</td>
+                                <td>AR Pattern detected</td>
+                                <td>Processed Marker to copy</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <img src={selectedMarkerFile} alt="Uploaded Marker" width="200px"></img>
+                                </td>
+                                <td>
+                                    <img src={patternImage} alt="AR Pattern" width="200px" className="pixelated"></img>
+                                </td>
+                                <td>
+                                    <img src={generatedMarker} alt="Processed Marker" width="200px"></img>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>) : null }
 
                 <button onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>

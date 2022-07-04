@@ -11,3 +11,9 @@ button, input {
   content: "";
   display: inline-block;
 }
+.pixelated {
+  image-rendering: pixelated;
+}
+table {
+  width: 100%;
+}
