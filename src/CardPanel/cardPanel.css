@@ -1,12 +1,13 @@
 button, input {
-    padding: .5em;
-    margin: .5em;
+  padding: .5em;
+  margin: .5em;
 }
 .cardName {
-    word-wrap:break-word;
-    min-height: 1em;
+  word-wrap: break-word;
+  min-height: 1em;
+  font-size: 1.5em;
 }
 .cardName:empty::before {
-  content:"";
-  display:inline-block;
+  content: "";
+  display: inline-block;
 }

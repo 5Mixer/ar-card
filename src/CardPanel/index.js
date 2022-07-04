@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import ModelViewer from '../ModelViewer/ModelViewer';
 import FileUploader from '../FileUploader';
+import patternProcessor from './patternProcessor'
 import './cardPanel.css'
 
 function CardPanel(props) {
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedModelFile, setSelectedModelFile] = useState(null);
+    const [selectedMarkerFile, setSelectedMarkerFile] = useState(null);
     const [model, setModel] = useState(null);
 
     const saveCard = () => {      
 		const formData = new FormData();
-		formData.set('model', selectedFile);
+		formData.set('model', selectedModelFile);
         formData.set('name', props.character.name)
 
         const request = new XMLHttpRequest();
         request.open("PUT", `/api/cards/${props.character.id}`);
         request.send(formData);
         request.addEventListener('load', () => {
-            selectedFile.arrayBuffer().then((data) => {
+            selectedModelFile.arrayBuffer().then((data) => {
                 setModel(data)
                 props.setModel(data)
             })
@@ -27,10 +29,15 @@ function CardPanel(props) {
             setModel(props.character.model.data)
     }, [props.character.model])
 
+    const onSelectMarker = (markerFile) => {
+        setSelectedMarkerFile(markerFile);
+        patternProcessor(URL.createObjectURL(markerFile))
+    }
+
     return (
         <div>
-            <h1 className="cardName">{props.character.name}</h1>
-            <input type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
+            {/* <h1 className="cardName">{props.character.name}</h1> */}
+            <input className="cardName" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
             <div>
                 ❤️
                 <input type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />
@@ -41,9 +48,11 @@ function CardPanel(props) {
             </div>
 
             <div>
-                <button>View Model in AR</button>
+                <h3>Upload GLTF Model</h3>
+                <FileUploader onFileSelect={setSelectedModelFile} />
 
-                <FileUploader onFileSelect={setSelectedFile} />
+                <h3>Upload Card Image/Marker</h3>
+                <FileUploader onFileSelect={onSelectMarker} />
 
                 <button onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>
