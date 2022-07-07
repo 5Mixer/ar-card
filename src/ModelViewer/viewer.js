@@ -7,7 +7,7 @@ var model;
 
 function initialiseScene() {
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111111);
+    scene.background = new THREE.Color(0xcccccc);
     
     ambientLight = new THREE.AmbientLight(0xffffff, .7)
     scene.add(ambientLight)

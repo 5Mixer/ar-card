@@ -104,7 +104,7 @@ function App() {
   return (
     <div className="dark:bg-neutral-900 bg-neutral-50 subpixel-antialiased">
       <div className="flex">
-        <section className="shrink w-full flex-auto m-8 rounded flex flex-auto full-row flex-none flex-wrap">
+        <section className="shrink w-full p-8 rounded flex full-row flex-wrap h-screen overflow-auto">
           {cards.map(function(character) {
             return <Card character={character} key={character.id} selected={selectedCard === character.id} onClick={() => selectedCard === character.id ? setSelectedCard(null) : setSelectedCard(character.id)}/>;
           })}
@@ -112,7 +112,7 @@ function App() {
         </section>
         
         { (selectedCard != null) ? (
-          <section className="shrink w-full">
+          <section className="shrink w-full h-screen overflow-auto">
             <CardPanel
               character={cards.filter((card) => card.id === selectedCard)[0]}
               setModel={setSelectedModel}

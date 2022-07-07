@@ -40,7 +40,7 @@ function CardPanel(props) {
     }
 
     return (
-        <div className="dark:bg-neutral-800 p-8 bg-neutral-200 flex-auto h-full">
+        <div className="dark:bg-neutral-800 p-8 bg-neutral-200 w-auto min-h-screen">
             <input className="shadow-inner p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
             <div className="mt-8 flex">
                 <span className="m-auto px-2">❤️</span>
