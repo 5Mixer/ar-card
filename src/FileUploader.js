@@ -6,10 +6,14 @@ function FileUploader(props) {
     };
 
     return (
-        <div className="file-uploader">
+        <div className="py-2">
             <input
                 id="file_input"
-                className="block p-4 w-full text-sm text-neutral-900 bg-neutral-50 rounded border border-gray-300 cursor-pointer dark:text-neutral-300 focus:outline-none dark:bg-neutral-700 dark:border-neutral-600"
+                className="
+                    block
+                    file:shadow-inner file:rounded file:mr-4 file:px-4 file:py-2 file:bg-white dark:file:bg-neutral-700 file:border-0 file:text-neutral-900 dark:file:text-neutral-200
+                    py-2 w-full text-sm text-neutral-900 rounded cursor-pointer dark:text-neutral-300 focus:outline-none  dark:border-neutral-600
+                "
                 type="file"
                 onChange={handleFileInput}
                 accept="model/gltf+json"

@@ -41,21 +41,23 @@ function CardPanel(props) {
 
     return (
         <div className="dark:bg-neutral-800 p-8 bg-neutral-200 flex-auto h-full">
-            <input className="p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
+            <input className="shadow-inner p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
             <div className="mt-8 flex">
-                <span className="m-auto">❤️</span>
-                <input className="flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50" type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />
+                <span className="m-auto px-2">❤️</span>
+                <input className="shadow-inner flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />
             </div>
             <div className="mt-8 flex">
-                <span className="m-auto">🗡️</span>
-                <input className="flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50" type="number" value={props.character.attack} onChange={(e) => {props.setAttack(e.target.value)}} />
+                <span className="m-auto px-2">🗡️</span>
+                <input className="shadow-inner flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="number" value={props.character.attack} onChange={(e) => {props.setAttack(e.target.value)}} />
             </div>
 
             <div className="mt-8">
-                <h3 className="mt-8 mb-4 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
+                <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
+                <span className='dark:text-neutral-300 mb-4'>This is the 3D model of your character.</span>
                 <FileUploader onFileSelect={setSelectedModelFile} />
 
-                <h3 className="mt-8 mb-4 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
+                <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
+                <span className='dark:text-neutral-300 mb-8'>This is 2D character image forming the marker on the card.</span>
                 <FileUploader onFileSelect={onSelectMarker} />
                 {selectedMarkerFile ? (<div className="imageGrid">
                     <div className="w-full grid grid-cols-3 gap-x-4 mt-8">
@@ -69,7 +71,7 @@ function CardPanel(props) {
                     </div>
                 </div>) : null }
 
-                <button className="p-4 my-8 rounded dark:bg-neutral-700 dark:text-neutral-50" onClick={(e) => {saveCard()}}>Save Changes</button>
+                <button className="shadow-inner p-4 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>
 
 
