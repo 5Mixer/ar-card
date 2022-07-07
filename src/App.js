@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card'
 import CardPanel from './CardPanel'
-import './App.css';
 
 function App() {
   /*const cards = [
@@ -103,10 +102,9 @@ function App() {
   }
   
   return (
-    <div className="App">
-      <h1>Cards</h1>
-      <div className="cardPanelRoot">
-        <section className="deck">
+    <div className="dark:bg-neutral-900 bg-neutral-50 subpixel-antialiased">
+      <div className="flex">
+        <section className="shrink w-full flex-auto m-8 rounded flex flex-auto full-row flex-none flex-wrap">
           {cards.map(function(character) {
             return <Card character={character} key={character.id} selected={selectedCard === character.id} onClick={() => selectedCard === character.id ? setSelectedCard(null) : setSelectedCard(character.id)}/>;
           })}
@@ -114,7 +112,7 @@ function App() {
         </section>
         
         { (selectedCard != null) ? (
-          <section className="cardPanel">
+          <section className="shrink w-full">
             <CardPanel
               character={cards.filter((card) => card.id === selectedCard)[0]}
               setModel={setSelectedModel}

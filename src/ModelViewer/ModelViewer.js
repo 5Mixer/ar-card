@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import viewer from './viewer'
-import './modelViewer.css'
 
 function ModelViewer(props) {
     const canvasRef = useRef(null)
@@ -18,7 +17,7 @@ function ModelViewer(props) {
     }, [props.model]);
 
     return (
-        <canvas ref={canvasRef}></canvas>
+        <canvas className="flex min-w-full rounded margin-auto" ref={canvasRef}></canvas>
     );
 }
 
