@@ -51,12 +51,19 @@ export default function viewer(canvasRef, gltfBuffer) {
         antialias: true,
     });
     
-    renderer.setSize(canvasRef.clientWidth, canvasRef.clientHeight);
+    // renderer.setSize(canvasRef.clientWidth, canvasRef.clientWidth, false);
+
     renderer.shadowMap.enabled = true;
     
-    const camera = new THREE.PerspectiveCamera(75, canvasRef.clientWidth / canvasRef.clientHeight, 0.1, 1000 );
-    camera.position.set(-1, 1, -2)
-    
+    var camera = new THREE.PerspectiveCamera(55, canvasRef.clientWidth / canvasRef.clientHeight, 0.1, 1000 );
+    camera.position.set(-1, 1, -2);
+
+    new ResizeObserver(() => {
+        renderer.setSize(canvasRef.clientWidth, canvasRef.clientHeight, false);
+        camera.aspect = canvasRef.clientWidth / canvasRef.clientHeight;
+        camera.updateProjectionMatrix();
+    }).observe(canvasRef)
+
     const controls = new OrbitControls(camera, canvasRef)
     // controls.autoRotate = true
     // controls.autoRotateSpeed = 3
@@ -64,8 +71,8 @@ export default function viewer(canvasRef, gltfBuffer) {
     controls.enableDamping = true
     controls.dampingFactor = .3
     controls.enablePan = false;
-    controls.minDistance = 1;
-    controls.maxDistance = 10;
+    controls.minDistance = .5;
+    controls.maxDistance = 15;
     
     var mixer = undefined
     
@@ -105,7 +112,7 @@ export default function viewer(canvasRef, gltfBuffer) {
         
         scene.add(gltf.scene)
         // controls.target = new THREE.Box3().setFromObject(gltf.scene).getCenter(new THREE.Vector3())
-        controls.target = new THREE.Vector3(0, 1, 0);
+        controls.target = new THREE.Vector3(0, .8, 0);
     }
 
     const setModelFromBlob = (blob) => {

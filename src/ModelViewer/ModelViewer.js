@@ -17,7 +17,7 @@ function ModelViewer(props) {
     }, [props.model]);
 
     return (
-        <canvas className="flex min-w-full rounded margin-auto" ref={canvasRef}></canvas>
+        <canvas className="flex min-w-full max-w-full rounded margin-auto" ref={canvasRef}></canvas>
     );
 }
 

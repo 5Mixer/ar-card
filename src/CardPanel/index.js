@@ -42,14 +42,15 @@ function CardPanel(props) {
     return (
         <div className="dark:bg-neutral-800 p-8 bg-neutral-200 w-auto min-h-screen">
             <input className="shadow-inner p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
-            <div className="mt-8 flex">
+
+            {/* <div className="mt-8 flex">
                 <span className="m-auto px-2">❤️</span>
                 <input className="shadow-inner flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="number" value={props.character.health} onChange={(e) => {props.setHealth(e.target.value)}} />
             </div>
             <div className="mt-8 flex">
                 <span className="m-auto px-2">🗡️</span>
                 <input className="shadow-inner flex-grow p-4 ml-4 rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="number" value={props.character.attack} onChange={(e) => {props.setAttack(e.target.value)}} />
-            </div>
+            </div> */}
 
             <div className="mt-8">
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
