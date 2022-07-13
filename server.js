@@ -16,7 +16,7 @@ const sqlite3 = require('sqlite3').verbose()
 const db = new sqlite3.Database("db.db")
 
 db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS cards (id INTEGER NOT NULL PRIMARY KEY, name TEXT, model BLOB);");
+    db.run("CREATE TABLE IF NOT EXISTS cards (id INTEGER NOT NULL PRIMARY KEY, name TEXT, model BLOB, marker BLOB);");
 
     db.each("SELECT rowid AS id, name FROM cards", (err, row) => {
         console.log(row);
@@ -29,7 +29,7 @@ app.post('/api/models', (req, res) => {
 });
 
 app.put('/api/cards/:id', (req, res) => {
-    if (!req.files || !req.files.model) {
+    if (!req.files) {
         // Only update textual fields
         const name = req.body.name;
         db.run(
@@ -46,6 +46,7 @@ app.put('/api/cards/:id', (req, res) => {
         return;
     }
     const model = req.files.model;
+    const marker = req.files.marker;
     const name = req.body.name;
 
     if (model.mimetype !== 'model/gltf+json') {
@@ -54,9 +55,10 @@ app.put('/api/cards/:id', (req, res) => {
     }
 
     db.run(
-        "UPDATE cards SET name = (?), model = (?) WHERE rowid = (?);",
+        "UPDATE cards SET name = (?), model = (?), marker = (?) WHERE rowid = (?);",
         name,
         model.data,
+        marker.data,
         req.params.id,
         function(err) {
             if (err) {
@@ -68,7 +70,7 @@ app.put('/api/cards/:id', (req, res) => {
 });
 
 app.get('/api/cards', (req, res) => {
-    db.all("SELECT * FROM cards", function(err, cards) {
+    db.all("SELECT (name, model) FROM cards", function(err, cards) {
         if (err) {
             res.status(500).end("Unable to get cards from database", err);
         } else {

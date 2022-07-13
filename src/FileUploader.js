@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 function FileUploader(props) {
     const handleFileInput = (e) => {
-        props.onFileSelect(e.target.files[0]);
+        props.onFileSelect(e.target.files[0].data);
     };
 
     return (
@@ -16,7 +16,7 @@ function FileUploader(props) {
                 "
                 type="file"
                 onChange={handleFileInput}
-                accept="model/gltf+json"
+                accept={props.type}
             />
         </div>
     )

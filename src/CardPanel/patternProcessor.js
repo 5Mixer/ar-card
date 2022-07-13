@@ -73,12 +73,12 @@ var triggerDownload = function(patternFileString, fileName = 'pattern-marker.pat
 	document.body.removeChild(domElement)
 }
 
-var buildFullMarker =  function(innerImageURL, pattRatio, size, color, onComplete) {
+var buildFullMarker =  function(image, pattRatio, size, color, onComplete) {
 	var whiteMargin = 0.1
 	var blackMargin = (1 - 2 * whiteMargin) * ((1-pattRatio)/2)
 	// var blackMargin = 0.2
 
-    encodeImageURL(innerImageURL, console.log)
+    // encodeImageURL(image, console.log)
 
 	var innerMargin = whiteMargin + blackMargin
 
@@ -110,6 +110,7 @@ var buildFullMarker =  function(innerImageURL, pattRatio, size, color, onComplet
 	// display innerImage in the middle
 	var innerImage = document.createElement('img')
 	innerImage.addEventListener('load', function() {
+	// createImageBitmap(innerImageURL).then(() => {
 		// draw innerImage
 		context.drawImage(innerImage,
 			innerMargin * canvas.width,
@@ -121,10 +122,10 @@ var buildFullMarker =  function(innerImageURL, pattRatio, size, color, onComplet
 		var imageUrl = canvas.toDataURL()
         onComplete({
             marker: imageUrl,
-            patternImage: getPatternImage(innerImage)
+            patternImage: getPatternImage(innerImage.src)
         });
 	})
-	innerImage.src = innerImageURL
+	innerImage.src = URL.createObjectURL(image.data)
 }
 
 export default function patternProcessor(file) {

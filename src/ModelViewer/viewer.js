@@ -139,7 +139,7 @@ export default function viewer(canvasRef, gltfBuffer) {
     
     function update() {
         if (!scene)
-        return;
+            return;
         const delta = clock.getDelta();
         renderer.render(scene, camera)
         

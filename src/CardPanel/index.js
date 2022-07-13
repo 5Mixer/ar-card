@@ -9,11 +9,12 @@ function CardPanel(props) {
     const [model, setModel] = useState(null);
 
     const [generatedMarker, setGeneratedMarker] = useState(null);
-    const [patternImage, setPatternImage] = useState(null);
+    const [patternImage, setPatternImage] = useState(props.character.marker);
 
     const saveCard = () => {      
 		const formData = new FormData();
 		formData.set('model', selectedModelFile);
+		formData.set('marker', selectedMarkerFile);
         formData.set('name', props.character.name)
 
         const request = new XMLHttpRequest();
@@ -26,14 +27,26 @@ function CardPanel(props) {
             })
         });
     }
+
+    const onSelectMarker = (markerFile) => {
+        setSelectedMarkerFile(markerFile);
+        loadMarker(markerFile)
+    }
+
     useEffect(() => {
         if (props.character.model)
             setModel(props.character.model.data)
     }, [props.character.model])
 
-    const onSelectMarker = (markerFile) => {
-        setSelectedMarkerFile(URL.createObjectURL(markerFile));
-        patternProcessor(URL.createObjectURL(markerFile)).then((result) => {
+    useEffect(() => {
+        if (props.character.marker) {
+            // setSelectedMarkerFile(props.character.marker)
+            loadMarker(props.character.marker)
+        }
+    })
+
+    const loadMarker = (markerImage) => {
+        patternProcessor(markerImage).then((result) => {
             setGeneratedMarker(result.marker);
             setPatternImage(result.patternImage);
         });
@@ -55,11 +68,11 @@ function CardPanel(props) {
             <div className="mt-8">
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
                 <span className='dark:text-neutral-300 mb-4'>This is the 3D model of your character.</span>
-                <FileUploader onFileSelect={setSelectedModelFile} />
+                <FileUploader onFileSelect={setSelectedModelFile} type="image/png" />
 
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
                 <span className='dark:text-neutral-300 mb-8'>This is 2D character image forming the marker on the card.</span>
-                <FileUploader onFileSelect={onSelectMarker} />
+                <FileUploader onFileSelect={onSelectMarker} type="model/gltf+json" />
                 {selectedMarkerFile ? (<div className="imageGrid">
                     <div className="w-full grid grid-cols-3 gap-x-4 mt-8">
                         <span className="dark:text-neutral-300">Uploaded Marker</span>
