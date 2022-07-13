@@ -9,7 +9,7 @@ function CardPanel(props) {
     const [model, setModel] = useState(null);
 
     const [generatedMarker, setGeneratedMarker] = useState(null);
-    const [patternImage, setPatternImage] = useState(props.character.marker);
+    const [patternImage, setPatternImage] = useState(null);
 
     const getModel = () => {
         const controller = new AbortController()
@@ -21,6 +21,28 @@ function CardPanel(props) {
             })
             .then(function(model) {
                 setModel(model)
+            })
+            .catch(function(err) {
+                if (err.name !== 'AbortError')
+                    throw err;
+                });
+    
+        return () => {
+            controller.abort()
+        };
+    }
+    useEffect(getModel, [props.character.id])
+
+    const getMarker = () => {
+        const controller = new AbortController()
+        const signal = controller.signal
+    
+        fetch(`/api/marker/${props.character.id}`, {signal})
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(model) {
+                setMarker(model)
             })
             .catch(function(err) {
                 if (err.name !== 'AbortError')
@@ -59,13 +81,6 @@ function CardPanel(props) {
         if (props.character.model)
             setModel(props.character.model.data)
     }, [props.character.model])
-
-    useEffect(() => {
-        if (props.character.marker) {
-            // setSelectedMarkerFile(props.character.marker)
-            loadMarker(props.character.marker)
-        }
-    })
 
     const loadMarker = (markerImage) => {
         patternProcessor(markerImage).then((result) => {
