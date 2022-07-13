@@ -11,10 +11,32 @@ function CardPanel(props) {
     const [generatedMarker, setGeneratedMarker] = useState(null);
     const [patternImage, setPatternImage] = useState(props.character.marker);
 
+    const getModel = () => {
+        const controller = new AbortController()
+        const signal = controller.signal
+    
+        fetch(`/api/model/${props.character.id}`, {signal})
+            .then(function(response) {
+                return response.text();
+            })
+            .then(function(model) {
+                setModel(model)
+            })
+            .catch(function(err) {
+                if (err.name !== 'AbortError')
+                    throw err;
+                });
+    
+        return () => {
+            controller.abort()
+        };
+    }
+    useEffect(getModel, [props.character.id])
+
     const saveCard = () => {      
-		const formData = new FormData();
-		formData.set('model', selectedModelFile);
-		formData.set('marker', selectedMarkerFile);
+        const formData = new FormData();
+        formData.set('model', selectedModelFile);
+        formData.set('marker', selectedMarkerFile);
         formData.set('name', props.character.name)
 
         const request = new XMLHttpRequest();

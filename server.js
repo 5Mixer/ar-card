@@ -23,9 +23,15 @@ db.serialize(() => {
     });
 })
 
-app.post('/api/models', (req, res) => {
-    console.log("Received", req.files);
-    res.status(200).end()
+app.get('/api/model/:id', (req, res) => {
+    db.get("SELECT model FROM cards WHERE rowid = (?)", req.params.id, function(err, model) {
+        if (err) {
+            res.send(500).end("Unable to get model from database", err);
+        } else {
+            console.log(model)
+            res.send(model.model);
+        }
+    });
 });
 
 app.put('/api/cards/:id', (req, res) => {
@@ -70,7 +76,7 @@ app.put('/api/cards/:id', (req, res) => {
 });
 
 app.get('/api/cards', (req, res) => {
-    db.all("SELECT (name, model) FROM cards", function(err, cards) {
+    db.all("SELECT rowid AS id, name FROM cards", function(err, cards) {
         if (err) {
             res.status(500).end("Unable to get cards from database", err);
         } else {
