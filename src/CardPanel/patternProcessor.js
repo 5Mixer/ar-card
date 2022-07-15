@@ -73,7 +73,7 @@ var triggerDownload = function(patternFileString, fileName = 'pattern-marker.pat
 	document.body.removeChild(domElement)
 }
 
-var buildFullMarker =  function(image, pattRatio, size, color, onComplete) {
+var buildFullMarker =  function(imageURL, pattRatio, size, color, onComplete) {
 	var whiteMargin = 0.1
 	var blackMargin = (1 - 2 * whiteMargin) * ((1-pattRatio)/2)
 	// var blackMargin = 0.2
@@ -122,15 +122,15 @@ var buildFullMarker =  function(image, pattRatio, size, color, onComplete) {
 		var imageUrl = canvas.toDataURL()
         onComplete({
             marker: imageUrl,
-            patternImage: getPatternImage(innerImage.src)
+            patternImage: getPatternImage(innerImage)
         });
 	})
-	innerImage.src = URL.createObjectURL(image.data)
+	innerImage.src = imageURL
 }
 
-export default function patternProcessor(file) {
+export default function patternProcessor(fileURL) {
     return new Promise((resolve, reject) => {
-        buildFullMarker(file, .6, 512, "black", function(output) {
+        buildFullMarker(fileURL, .6, 512, "black", function(output) {
             resolve(output);
         })
     })

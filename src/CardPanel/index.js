@@ -6,6 +6,7 @@ import patternProcessor from './patternProcessor'
 function CardPanel(props) {
     const [selectedModelFile, setSelectedModelFile] = useState(null);
     const [selectedMarkerFile, setSelectedMarkerFile] = useState(null);
+    const [markerURL, setMarkerURL] = useState(null);
     const [model, setModel] = useState(null);
 
     const [generatedMarker, setGeneratedMarker] = useState(null);
@@ -34,26 +35,11 @@ function CardPanel(props) {
     useEffect(getModel, [props.character.id])
 
     const getMarker = () => {
-        const controller = new AbortController()
-        const signal = controller.signal
-    
-        fetch(`/api/marker/${props.character.id}`, {signal})
-            .then(function(response) {
-                return response.text();
-            })
-            .then(function(model) {
-                setMarker(model)
-            })
-            .catch(function(err) {
-                if (err.name !== 'AbortError')
-                    throw err;
-                });
-    
-        return () => {
-            controller.abort()
-        };
+        setMarkerURL(`/api/marker/${props.character.id}`);
+        setSelectedMarkerFile(`/api/marker/${props.character.id}`);
+        loadMarker(`/api/marker/${props.character.id}`);
     }
-    useEffect(getModel, [props.character.id])
+    useEffect(getMarker, [props.character.id])
 
     const saveCard = () => {      
         const formData = new FormData();
@@ -73,8 +59,10 @@ function CardPanel(props) {
     }
 
     const onSelectMarker = (markerFile) => {
-        setSelectedMarkerFile(markerFile);
-        loadMarker(markerFile)
+        setSelectedMarkerFile(markerFile)
+        const url = URL.createObjectURL(markerFile)
+        setMarkerURL(url);
+        loadMarker(url);
     }
 
     useEffect(() => {
@@ -105,18 +93,18 @@ function CardPanel(props) {
             <div className="mt-8">
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
                 <span className='dark:text-neutral-300 mb-4'>This is the 3D model of your character.</span>
-                <FileUploader onFileSelect={setSelectedModelFile} type="image/png" />
+                <FileUploader onFileSelect={setSelectedModelFile} type="model/gltf+json" />
 
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
                 <span className='dark:text-neutral-300 mb-8'>This is 2D character image forming the marker on the card.</span>
-                <FileUploader onFileSelect={onSelectMarker} type="model/gltf+json" />
+                <FileUploader onFileSelect={onSelectMarker} type="image/png" />
                 {selectedMarkerFile ? (<div className="imageGrid">
                     <div className="w-full grid grid-cols-3 gap-x-4 mt-8">
                         <span className="dark:text-neutral-300">Uploaded Marker</span>
                         <span className="dark:text-neutral-300">AR Pattern detected</span>
                         <span className="dark:text-neutral-300">Processed Marker to copy</span>
             
-                        <img src={selectedMarkerFile} alt="Uploaded Marker" width="200px" className="rounded"></img>
+                        <img src={markerURL} alt="Uploaded Marker" width="200px" className="rounded"></img>
                         <img src={patternImage} alt="AR Pattern" width="200px" className="rounded [image-rendering:pixelated]"></img>
                         <img src={generatedMarker} alt="Processed Marker" width="200px" className="rounded"></img>
                     </div>

@@ -24,47 +24,41 @@ db.serialize(() => {
 })
 
 app.get('/api/model/:id', (req, res) => {
-    db.get("SELECT model FROM cards WHERE rowid = (?)", req.params.id, function(err, model) {
+    db.get("SELECT model FROM cards WHERE rowid = (?)", req.params.id, function(err, result) {
         if (err) {
             res.send(500).end("Unable to get model from database", err);
         } else {
-            console.log(model)
-            res.send(model.model);
+            res.send(result.model);
+        }
+    });
+});
+
+app.get('/api/marker/:id', (req, res) => {
+    db.get("SELECT marker FROM cards WHERE rowid = (?)", req.params.id, function(err, result) {
+        if (err) {
+            res.send(500).end("Unable to get marker from database", err);
+        } else {
+            res.setHeader('content-type', 'image/png');
+            res.send(result.marker);
         }
     });
 });
 
 app.put('/api/cards/:id', (req, res) => {
-    if (!req.files) {
-        // Only update textual fields
-        const name = req.body.name;
-        db.run(
-            "UPDATE cards SET name = (?) WHERE rowid = (?);",
-            name,
-            req.params.id,
-            function(err) {
-                if (err) {
-                    res.status(500).end("Failed to update card", err);
-                } else {
-                    res.status(200).end();
-                }
-            });
-        return;
-    }
     const model = req.files.model;
     const marker = req.files.marker;
     const name = req.body.name;
 
-    if (model.mimetype !== 'model/gltf+json') {
+    if (model && model.mimetype !== 'model/gltf+json') {
         res.status(500).end("Invalid model mime type");
         return;
     }
 
     db.run(
-        "UPDATE cards SET name = (?), model = (?), marker = (?) WHERE rowid = (?);",
+        "UPDATE cards SET name = coalesce(?, name), model = coalesce(?, model), marker = coalesce(?, marker) WHERE rowid = (?);",
         name,
-        model.data,
-        marker.data,
+        model ? model.data : null,
+        marker ? marker.data : null,
         req.params.id,
         function(err) {
             if (err) {

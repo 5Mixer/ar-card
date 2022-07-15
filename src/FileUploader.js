@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 
 function FileUploader(props) {
     const handleFileInput = (e) => {
-        props.onFileSelect(e.target.files[0].data);
+        props.onFileSelect(e.target.files[0]);
     };
 
     return (
