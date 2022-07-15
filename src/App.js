@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Card from './Card'
+import CardButton from './CardButton'
 import CardPanel from './CardPanel'
 
 function App() {
@@ -63,7 +64,7 @@ function App() {
           {cards.map(function(character) {
             return <Card character={character} key={character.id} selected={selectedCard === character.id} onClick={() => selectedCard === character.id ? setSelectedCard(null) : setSelectedCard(character.id)}/>;
           })}
-          <Card character={{name:"New Character", health:"_", attack:"_"}} onClick={() => newCharacter()}/>
+          <CardButton onClick={() => newCharacter()}/>
         </section>
         
         { (selectedCard != null) ? (

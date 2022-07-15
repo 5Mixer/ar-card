@@ -13,6 +13,7 @@ function CardPanel(props) {
     const [patternImage, setPatternImage] = useState(null);
 
     const getModel = () => {
+        setModel(null);
         const controller = new AbortController()
         const signal = controller.signal
     
@@ -35,6 +36,13 @@ function CardPanel(props) {
     useEffect(getModel, [props.character.id])
 
     const getMarker = () => {
+            setMarkerURL(null);
+            setSelectedMarkerFile(null);
+            loadMarker(null);
+            setPatternImage(null);
+            setGeneratedMarker(null);
+            setMarkerURL(null)
+            
         setMarkerURL(`/api/marker/${props.character.id}`);
         setSelectedMarkerFile(`/api/marker/${props.character.id}`);
         loadMarker(`/api/marker/${props.character.id}`);
@@ -68,6 +76,8 @@ function CardPanel(props) {
     useEffect(() => {
         if (props.character.model)
             setModel(props.character.model.data)
+        else
+            setModel(null)
     }, [props.character.model])
 
     const loadMarker = (markerImage) => {
@@ -98,15 +108,15 @@ function CardPanel(props) {
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
                 <span className='dark:text-neutral-300 mb-8'>This is 2D character image forming the marker on the card.</span>
                 <FileUploader onFileSelect={onSelectMarker} type="image/png" />
-                {selectedMarkerFile ? (<div className="imageGrid">
+                {generatedMarker != null && markerURL != null && patternImage != null ? (<div className="imageGrid">
                     <div className="w-full grid grid-cols-3 gap-x-4 mt-8">
                         <span className="dark:text-neutral-300">Uploaded Marker</span>
                         <span className="dark:text-neutral-300">AR Pattern detected</span>
                         <span className="dark:text-neutral-300">Processed Marker to copy</span>
             
-                        <img src={markerURL} alt="Uploaded Marker" width="200px" className="rounded"></img>
-                        <img src={patternImage} alt="AR Pattern" width="200px" className="rounded [image-rendering:pixelated]"></img>
-                        <img src={generatedMarker} alt="Processed Marker" width="200px" className="rounded"></img>
+                        <img src={markerURL} alt="" width="200px" className="rounded"></img>
+                        <img src={patternImage} alt="" width="200px" className="rounded [image-rendering:pixelated]"></img>
+                        <img src={generatedMarker} alt="" width="200px" className="rounded"></img>
                     </div>
                 </div>) : null }
 
