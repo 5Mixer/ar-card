@@ -45,9 +45,9 @@ app.get('/api/marker/:id', (req, res) => {
 });
 
 app.put('/api/cards/:id', (req, res) => {
-    const model = req.files.model;
-    const marker = req.files.marker;
-    const name = req.body.name;
+    const model = req.files ? req.files.model : null;
+    const marker = req.files ? req.files.marker : null;
+    const name = req.body ? req.body.name : null;
 
     if (model && model.mimetype !== 'model/gltf+json') {
         res.status(500).end("Invalid model mime type");

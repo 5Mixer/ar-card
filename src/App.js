@@ -29,15 +29,6 @@ function App() {
   }
   useEffect(getCards, [])
 
-  const setSelectedModel = (model) => {
-    setCards(cards.map(card => {
-      if (card.id === selectedCard) {
-        return {...card, model}
-      }
-      return {...card}
-    }))
-  }
-
   const setSelectedName = (name) => {
     setCards(cards.map(card => {
       if (card.id === selectedCard) {
@@ -53,7 +44,7 @@ function App() {
       return response.json();
     })
     .then(function(card) {
-      setCards([...cards, {id: card.id, name: "", model: null}])
+      setCards([...cards, {id: card.id, name: ""}])
     });
   }
   
@@ -71,7 +62,6 @@ function App() {
           <section className="shrink w-full h-screen overflow-auto">
             <CardPanel
               character={cards.filter((card) => card.id === selectedCard)[0]}
-              setModel={setSelectedModel}
               setName={setSelectedName}
             />
           </section>

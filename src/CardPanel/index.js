@@ -12,84 +12,95 @@ function CardPanel(props) {
     const [generatedMarker, setGeneratedMarker] = useState(null);
     const [patternImage, setPatternImage] = useState(null);
 
-    const getModel = () => {
+    const fetchModel = () => {
         setModel(null);
-        const controller = new AbortController()
-        const signal = controller.signal
+
+        const controller = new AbortController();
+        const signal = controller.signal;
     
         fetch(`/api/model/${props.character.id}`, {signal})
             .then(function(response) {
                 return response.text();
             })
             .then(function(model) {
-                setModel(model)
+                setModel(model);
             })
             .catch(function(err) {
-                if (err.name !== 'AbortError')
+                if (err.name !== 'AbortError') {
                     throw err;
-                });
+                }
+            });
     
         return () => {
-            controller.abort()
+            controller.abort();
         };
     }
-    useEffect(getModel, [props.character.id])
+    useEffect(fetchModel, [props.character.id])
 
     const getMarker = () => {
-            setMarkerURL(null);
-            setSelectedMarkerFile(null);
-            loadMarker(null);
-            setPatternImage(null);
-            setGeneratedMarker(null);
-            setMarkerURL(null)
-            
         setMarkerURL(`/api/marker/${props.character.id}`);
         setSelectedMarkerFile(`/api/marker/${props.character.id}`);
         loadMarker(`/api/marker/${props.character.id}`);
     }
-    useEffect(getMarker, [props.character.id])
+    useEffect(getMarker, [props.character.id]);
 
     const saveCard = () => {      
         const formData = new FormData();
         formData.set('model', selectedModelFile);
         formData.set('marker', selectedMarkerFile);
-        formData.set('name', props.character.name)
+        formData.set('name', props.character.name);
 
         const request = new XMLHttpRequest();
-        request.open("PUT", `/api/cards/${props.character.id}`);
+        request.open('PUT', `/api/cards/${props.character.id}`);
         request.send(formData);
         request.addEventListener('load', () => {
-            selectedModelFile.arrayBuffer().then((data) => {
-                setModel(data)
-                props.setModel(data)
-            })
+            // Saved.
         });
+    }
+
+    const showModelFromFileInput = () => {
+        if (selectedModelFile) {
+            selectedModelFile.arrayBuffer().then((data) => {
+                setModel(data);
+            });
+        }
+    }
+
+    const onSelectModel = (modelFile) => {
+        setSelectedModelFile(modelFile);
+        
+        showModelFromFileInput();
     }
 
     const onSelectMarker = (markerFile) => {
-        setSelectedMarkerFile(markerFile)
-        const url = URL.createObjectURL(markerFile)
+        setSelectedMarkerFile(markerFile);
+        const url = URL.createObjectURL(markerFile);
         setMarkerURL(url);
         loadMarker(url);
+        saveCard();
     }
 
-    useEffect(() => {
-        if (props.character.model)
-            setModel(props.character.model.data)
-        else
-            setModel(null)
-    }, [props.character.model])
-
     const loadMarker = (markerImage) => {
-        patternProcessor(markerImage).then((result) => {
-            setGeneratedMarker(result.marker);
-            setPatternImage(result.patternImage);
-        });
+        setPatternImage(null);
+        setGeneratedMarker(null);
+
+        if (markerImage) {
+            patternProcessor(markerImage).then((result) => {
+                setGeneratedMarker(result.marker);
+                setPatternImage(result.patternImage);
+            });
+        }
     }
 
     return (
         <div className="dark:bg-neutral-800 p-8 bg-neutral-200 w-auto min-h-screen">
-            <input className="shadow-inner p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" type="text" value={props.character.name || ""} maxLength="50" onChange={(e)=>{props.setName(e.target.value)}}></input>
+            <input
+                className="shadow-inner p-4 font-bold w-full text-xl rounded dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border"
+                type="text" 
+                value={props.character.name || ""}
+                maxLength="50"
+                onChange={(e) => { props.setName(e.target.value) }}
+            />
 
             {/* <div className="mt-8 flex">
                 <span className="m-auto px-2">❤️</span>
@@ -103,7 +114,7 @@ function CardPanel(props) {
             <div className="mt-8">
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200">Upload GLTF Model</h3>
                 <span className='dark:text-neutral-300 mb-4'>This is the 3D model of your character.</span>
-                <FileUploader onFileSelect={setSelectedModelFile} type="model/gltf+json" />
+                <FileUploader onFileSelect={onSelectModel} type="model/gltf+json" />
 
                 <h3 className="mt-8 mb-2 text-xl dark:text-neutral-200 ">Upload Card Image/Marker</h3>
                 <span className='dark:text-neutral-300 mb-8'>This is 2D character image forming the marker on the card.</span>
