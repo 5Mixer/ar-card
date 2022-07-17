@@ -122,7 +122,8 @@ var buildFullMarker =  function(imageURL, pattRatio, size, color, onComplete) {
 		var imageUrl = canvas.toDataURL()
         onComplete({
             marker: imageUrl,
-            patternImage: getPatternImage(innerImage)
+            patternImage: getPatternImage(innerImage),
+			pattern: encodeImage(innerImage)
         });
 	})
 	innerImage.src = imageURL

@@ -8,6 +8,7 @@ function CardPanel(props) {
     const [selectedMarkerFile, setSelectedMarkerFile] = useState(null);
     const [markerURL, setMarkerURL] = useState(null);
     const [model, setModel] = useState(null);
+    const [pattern, setPattern] = useState(null);
 
     const [generatedMarker, setGeneratedMarker] = useState(null);
     const [patternImage, setPatternImage] = useState(null);
@@ -39,15 +40,16 @@ function CardPanel(props) {
 
     const getMarker = () => {
         setMarkerURL(`/api/marker/${props.character.id}`);
-        setSelectedMarkerFile(`/api/marker/${props.character.id}`);
+        // setSelectedMarkerFile(`/api/marker/${props.character.id}`);
         loadMarker(`/api/marker/${props.character.id}`);
     }
     useEffect(getMarker, [props.character.id]);
 
-    const saveCard = () => {      
+    const saveCard = () => {
         const formData = new FormData();
         formData.set('model', selectedModelFile);
         formData.set('marker', selectedMarkerFile);
+        formData.set('pattern', pattern);
         formData.set('name', props.character.name);
 
         const request = new XMLHttpRequest();
@@ -88,6 +90,7 @@ function CardPanel(props) {
             patternProcessor(markerImage).then((result) => {
                 setGeneratedMarker(result.marker);
                 setPatternImage(result.patternImage);
+                setPattern(result.pattern);
             });
         }
     }
