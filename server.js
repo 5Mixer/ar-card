@@ -16,17 +16,20 @@ const sqlite3 = require('sqlite3').verbose()
 const db = new sqlite3.Database("db.db")
 
 db.serialize(() => {
-    db.run("CREATE TABLE IF NOT EXISTS cards (id INTEGER NOT NULL PRIMARY KEY, name TEXT, model BLOB, marker BLOB);");
+    db.run(`CREATE TABLE IF NOT EXISTS cards
+            (
+                id INTEGER NOT NULL PRIMARY KEY,
+                name TEXT, model BLOB,
+                marker BLOB,
+                pattern TEXT
+            );`);
 
-    db.each("SELECT rowid AS id, name FROM cards", (err, row) => {
-        console.log(row);
-    });
 })
 
 app.get('/api/model/:id', (req, res) => {
     db.get("SELECT model FROM cards WHERE rowid = (?)", req.params.id, function(err, result) {
         if (err) {
-            res.send(500).end("Unable to get model from database", err);
+            res.sendStatus(500).end("Unable to get model from database", err);
         } else {
             res.send(result.model);
         }
@@ -36,10 +39,20 @@ app.get('/api/model/:id', (req, res) => {
 app.get('/api/marker/:id', (req, res) => {
     db.get("SELECT marker FROM cards WHERE rowid = (?)", req.params.id, function(err, result) {
         if (err) {
-            res.send(500).end("Unable to get marker from database", err);
+            res.sendStatus(500).end("Unable to get marker from database", err);
         } else {
             res.setHeader('content-type', 'image/png');
             res.send(result.marker);
+        }
+    });
+});
+
+app.get('/api/pattern/:id', (req, res) => {
+    db.get("SELECT rowid AS id, pattern FROM cards WHERE rowid = (?)", req.params.id, function(err, result) {
+        if (err) {
+            res.status(500).end("Unable to get patterns from database", err);
+        } else {
+            res.send(result.pattern);
         }
     });
 });
@@ -48,6 +61,7 @@ app.put('/api/cards/:id', (req, res) => {
     const model = req.files ? req.files.model : null;
     const marker = req.files ? req.files.marker : null;
     const name = req.body ? req.body.name : null;
+    const pattern = req.body ? req.body.pattern : null
 
     if (model && model.mimetype !== 'model/gltf+json') {
         res.status(500).end("Invalid model mime type");
@@ -55,10 +69,17 @@ app.put('/api/cards/:id', (req, res) => {
     }
 
     db.run(
-        "UPDATE cards SET name = coalesce(?, name), model = coalesce(?, model), marker = coalesce(?, marker) WHERE rowid = (?);",
+        `UPDATE cards
+        SET
+            name = coalesce(?, name),
+            model = coalesce(?, model),
+            marker = coalesce(?, marker),
+            pattern = coalesce(?, pattern)
+        WHERE rowid = (?);`,
         name,
         model ? model.data : null,
         marker ? marker.data : null,
+        pattern ? pattern : null,
         req.params.id,
         function(err) {
             if (err) {

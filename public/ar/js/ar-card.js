@@ -1,9 +1,7 @@
 var scene, camera, renderer, clock, deltaTime, totalTime;
 var arToolkitSource, arToolkitContext;
-var markerRoot1, markerRoot2;
-var mesh1;
 
-function initialize() {
+function initialize(cards) {
 	scene = new THREE.Scene();
 
 	let ambientLight = new THREE.AmbientLight(0xcccccc, 0.5);
@@ -18,7 +16,7 @@ function initialize() {
 	});
 
 	renderer.setClearColor(new THREE.Color('lightgrey'), 0)
-	renderer.setSize( 640, 480 );
+	renderer.setSize(640, 480);
 	renderer.domElement.style.position = 'absolute';
 	renderer.domElement.style.top = '0px';
 	renderer.domElement.style.left = '0px';
@@ -62,23 +60,26 @@ function initialize() {
 	});
 
 	// build markerControls
-	markerRoot1 = new THREE.Group();
-	scene.add(markerRoot1);
-	let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoot1, {
-		type: 'pattern', patternUrl: "data/hiro.patt",
-	})
+	for (const card of cards) {
+		const markerRoot = new THREE.Group();
+		scene.add(markerRoot);
 
-	let geometry1 = new THREE.CubeGeometry(1, 1, 1);
-	let material1 = new THREE.MeshNormalMaterial({
-		transparent: true,
-		opacity: 0.5,
-		side: THREE.DoubleSide
-	}); 
-	
-	mesh1 = new THREE.Mesh(geometry1, material1);
-	mesh1.position.y = 0.5;
-	
-	markerRoot1.add(mesh1);
+		const markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+			type: 'pattern', patternUrl: `/api/pattern/${card.id}`,
+		});
+
+		const geometry = new THREE.CubeGeometry(1, 1, 1);
+		const material = new THREE.MeshNormalMaterial({
+			transparent: true,
+			opacity: 0.5,
+			side: THREE.DoubleSide
+		}); 
+		
+		const mesh = new THREE.Mesh(geometry, material);
+		mesh.position.y = 0.5;
+		
+		markerRoot.add(mesh);
+	}
 }
 
 function update() {
@@ -100,6 +101,13 @@ function animate() {
 }
 
 window.addEventListener('load', function() {
-    initialize();
-    animate();
+	fetch('/api/cards')
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(cards) {
+			initialize(cards);
+			animate();
+		})
+
 });
