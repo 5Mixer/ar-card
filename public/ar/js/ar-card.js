@@ -51,7 +51,9 @@ function initialize(cards) {
 	// create atToolkitContext
 	arToolkitContext = new THREEx.ArToolkitContext({
 		cameraParametersUrl: 'data/camera_para.dat',
-		detectionMode: 'mono'
+		detectionMode: 'mono',
+		// debug: true,
+		patternRatio: .6
 	});
 	
 	// copy projection matrix to camera when initialization complete
@@ -68,17 +70,24 @@ function initialize(cards) {
 			type: 'pattern', patternUrl: `/api/pattern/${card.id}`,
 		});
 
-		const geometry = new THREE.CubeGeometry(1, 1, 1);
-		const material = new THREE.MeshNormalMaterial({
-			transparent: true,
-			opacity: 0.5,
-			side: THREE.DoubleSide
-		}); 
+		// const geometry = new THREE.CubeGeometry(1, 1, 1);
+		// const material = new THREE.MeshNormalMaterial({
+		// 	transparent: true,
+		// 	opacity: 0.5,
+		// 	side: THREE.DoubleSide
+		// }); 
 		
-		const mesh = new THREE.Mesh(geometry, material);
-		mesh.position.y = 0.5;
-		
-		markerRoot.add(mesh);
+		// const mesh = new THREE.Mesh(geometry, material);
+		// mesh.position.y = 0.5;
+
+		var loader = new THREE.GLTFLoader();
+		loader.crossOrigin = true;
+		loader.load(`/api/model/${card.id}`, function (data) {
+			const gltf = data.scene;
+			markerRoot.add(gltf);
+		}, function progress(){}, function (err) {
+			console.error(err)
+		});
 	}
 }
 
@@ -109,5 +118,4 @@ window.addEventListener('load', function() {
 			initialize(cards);
 			animate();
 		})
-
 });
