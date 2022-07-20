@@ -1,10 +1,10 @@
-var scene, camera, renderer, clock, deltaTime, totalTime;
+var scene, camera, renderer, clock, deltaTime, totalTime, mixer;
 var arToolkitSource, arToolkitContext;
 
 function initialize(cards) {
 	scene = new THREE.Scene();
 
-	let ambientLight = new THREE.AmbientLight(0xcccccc, 0.5);
+	let ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
 	scene.add(ambientLight);
 				
 	camera = new THREE.Camera();
@@ -70,20 +70,17 @@ function initialize(cards) {
 			type: 'pattern', patternUrl: `/api/pattern/${card.id}`,
 		});
 
-		// const geometry = new THREE.CubeGeometry(1, 1, 1);
-		// const material = new THREE.MeshNormalMaterial({
-		// 	transparent: true,
-		// 	opacity: 0.5,
-		// 	side: THREE.DoubleSide
-		// }); 
-		
-		// const mesh = new THREE.Mesh(geometry, material);
-		// mesh.position.y = 0.5;
 
 		var loader = new THREE.GLTFLoader();
 		loader.crossOrigin = true;
 		loader.load(`/api/model/${card.id}`, function (data) {
 			const gltf = data.scene;
+
+			if (data.animations.length > 0) {
+				mixer = new THREE.AnimationMixer(gltf)
+				mixer.clipAction(data.animations[0]).play()
+			}
+
 			markerRoot.add(gltf);
 		}, function progress(){}, function (err) {
 			console.error(err)
@@ -91,9 +88,13 @@ function initialize(cards) {
 	}
 }
 
-function update() {
+function update(delta) {
 	if (arToolkitSource.ready !== false) {
 		arToolkitContext.update(arToolkitSource.domElement);
+        
+        if (mixer) {
+            mixer.update(delta)
+		}
 	}
 }
 
@@ -105,7 +106,7 @@ function animate() {
 	requestAnimationFrame(animate);
 	deltaTime = clock.getDelta();
 	totalTime += deltaTime;
-	update();
+	update(deltaTime);
 	render();
 }
 
