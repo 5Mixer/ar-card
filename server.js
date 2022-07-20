@@ -68,8 +68,8 @@ app.put('/api/cards/:id', (req, res) => {
     const pattern = req.body ? req.body.pattern : null
 
     if (model && model.mimetype !== 'model/gltf+json') {
-        res.status(500).end("Invalid model mime type");
-        return;
+        //res.status(500).end("Invalid model mime type");
+        //return;
     }
 
     db.run(
@@ -105,6 +105,18 @@ app.get('/api/cards', (req, res) => {
 });
 
 app.delete('/api/cards/:id', (req, res) => {
+    db.run("DELETE FROM cards WHERE rowid=?", req.params.id, function(err) {
+        if (err) {
+            res.status(500).end("Unable to insert card into database", err);
+        } else {
+            res.json({
+                id: this.lastID
+            });
+        }
+    });
+});
+
+app.get('/api/cards/delete/:id', (req, res) => {
     db.run("DELETE FROM cards WHERE rowid=?", req.params.id, function(err) {
         if (err) {
             res.status(500).end("Unable to insert card into database", err);
