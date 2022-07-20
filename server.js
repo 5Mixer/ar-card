@@ -41,8 +41,12 @@ app.get('/api/marker/:id', (req, res) => {
         if (err) {
             res.sendStatus(500).end("Unable to get marker from database", err);
         } else {
+	    if (result.marker) {
             res.setHeader('content-type', 'image/png');
             res.send(result.marker);
+	    }else{
+		    res.status(404).end();
+	    }
         }
     });
 });
@@ -117,9 +121,7 @@ app.post('/api/cards', (req, res) => {
         if (err) {
             res.status(500).end("Unable to insert card into database", err);
         } else {
-            res.json({
-                id: this.lastID
-            });
+	    res.status(200).end();
         }
     });
 })
