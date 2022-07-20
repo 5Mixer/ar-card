@@ -60,6 +60,13 @@ function CardPanel(props) {
         });
     }
 
+    const deleteCard = () => {
+        const request = new XMLHttpRequest();
+        request.open('DELETE', `/api/cards/${props.character.id}`);
+        request.send();
+        props.removeCard(props.character.id);
+    }
+
     const showModelFromFileInput = () => {
         if (selectedModelFile) {
             selectedModelFile.arrayBuffer().then((data) => {
@@ -133,6 +140,11 @@ function CardPanel(props) {
                         <img src={generatedMarker} alt="" width="200px" className="rounded"></img>
                     </div>
                 </div>) : null }
+
+                <button className="
+                    shadow-inner p-4 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border"
+                    onClick={(e) => {deleteCard()}}
+                >Delete Card</button>
 
                 <button className="shadow-inner p-4 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>

@@ -37,6 +37,13 @@ function App() {
       return {...card}
     }))
   }
+
+  const removeCard = (id) => {
+    setCards(cards.filter(card => {
+      return card.id !== id;
+    }));
+    setSelectedCard(null);
+  }
   
   function newCharacter() {
     fetch('/api/cards', {method: "POST"})
@@ -63,6 +70,7 @@ function App() {
             <CardPanel
               character={cards.filter((card) => card.id === selectedCard)[0]}
               setName={setSelectedName}
+              removeCard={removeCard}
             />
           </section>
           ) : null

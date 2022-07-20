@@ -100,6 +100,18 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
+app.delete('/api/cards/:id', (req, res) => {
+    db.run("DELETE FROM cards WHERE rowid=?", req.params.id, function(err) {
+        if (err) {
+            res.status(500).end("Unable to insert card into database", err);
+        } else {
+            res.json({
+                id: this.lastID
+            });
+        }
+    });
+});
+
 app.post('/api/cards', (req, res) => {
     db.run("INSERT INTO cards (name) VALUES (?)", null, function(err) {
         if (err) {
