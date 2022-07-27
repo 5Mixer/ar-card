@@ -104,6 +104,16 @@ app.get('/api/cards', (req, res) => {
     });
 });
 
+app.get('/api/valid-cards', (req, res) => {
+    db.all("SELECT rowid AS id, name FROM cards WHERE model IS NOT NULL AND pattern IS NOT NULL", function(err, cards) {
+        if (err) {
+            res.status(500).end("Unable to get cards from database", err);
+        } else {
+            res.json(cards);
+        }
+    });
+});
+
 app.delete('/api/cards/:id', (req, res) => {
     db.run("DELETE FROM cards WHERE rowid=?", req.params.id, function(err) {
         if (err) {

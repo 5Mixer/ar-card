@@ -36,7 +36,7 @@ function initialize(cards) {
 
 		if (arToolkitContext.arController !== null) {
 			arToolkitSource.copySizeTo(arToolkitContext.arController.canvas);
-		}	
+		}
 	}
 
 	arToolkitSource.init(function onReady(){
@@ -111,7 +111,7 @@ function animate() {
 }
 
 window.addEventListener('load', function() {
-	fetch('/api/cards')
+	fetch('/api/valid-cards')
 		.then(function(response) {
 			return response.json();
 		})

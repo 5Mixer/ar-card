@@ -142,13 +142,12 @@ function CardPanel(props) {
                 </div>) : null }
 
                 <button className="
-                    shadow-inner p-4 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border"
+                    text-red-600 hover:text-red-400 hover:underline font-bold px-4 py-2 my-8"
                     onClick={(e) => {deleteCard()}}
                 >Delete Card</button>
 
-                <button className="shadow-inner p-4 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" onClick={(e) => {saveCard()}}>Save Changes</button>
+                <button className="shadow-inner px-4 py-2 my-8 float-right rounded bg-white hover:dark:bg-neutral-600 dark:bg-neutral-700 dark:text-neutral-50 border-neutral-300 dark:border-neutral-600 border" onClick={(e) => {saveCard()}}>Save Changes</button>
             </div>
-
 
             <ModelViewer model={model}></ModelViewer>
         </div>
