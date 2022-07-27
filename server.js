@@ -143,7 +143,7 @@ app.post('/api/cards', (req, res) => {
         if (err) {
             res.status(500).end("Unable to insert card into database", err);
         } else {
-	    res.status(200).end();
+	        res.status(200).json({id: this.lastID});
         }
     });
 })
