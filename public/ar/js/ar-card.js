@@ -75,6 +75,7 @@ function initialize(cards) {
 		loader.crossOrigin = true;
 		loader.load(`/api/model/${card.id}`, function (data) {
 			const gltf = data.scene;
+			gltf.scale.set(1.5, 1.5, 1.5); 
 
 			if (data.animations.length > 0) {
 				mixer = new THREE.AnimationMixer(gltf)
