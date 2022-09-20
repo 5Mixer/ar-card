@@ -57,9 +57,9 @@ export default function Listing() {
   }
   
   return (
-    <div className="dark:bg-neutral-900 bg-neutral-50 subpixel-antialiased">
+    <div className="dark:bg-neutral-900 bg-neutral-50 subpixel-antialiased h-screen">
       <div className="flex">
-        <section className="shrink w-full p-8 rounded flex full-row flex-wrap h-screen overflow-auto">
+        <section className="w-full p-8 rounded flex flex-wrap overflow-auto justify-items-stretch content-start">
           {cards.map(function(character) {
             return <Card character={character} key={character.id} selected={selectedCard === character.id} onClick={() => selectedCard === character.id ? setSelectedCard(null) : setSelectedCard(character.id)}/>;
           })}
