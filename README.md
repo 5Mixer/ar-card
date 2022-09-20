@@ -1,6 +1,8 @@
 # ar-card
 Web application that allows storage and augmented reality viewing of models, particularly those made with [Blockbench](https://www.blockbench.net/).
 
+Disclaimer: Built specifically for a 3D modelling and card printing course I ran, with speed of delivery prioritised over long-term scalability or maintenance. The participants loved it! :D
+
 Made with
  - Tailwind CSS
  - React
