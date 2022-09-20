@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ModelViewer from '../ModelViewer/ModelViewer';
-import FileUploader from '../FileUploader';
+import FileUploader from '../../FileUploader';
 import patternProcessor from './patternProcessor'
 
 function CardPanel(props) {
@@ -40,7 +40,6 @@ function CardPanel(props) {
 
     const getMarker = () => {
         setMarkerURL(`/api/marker/${props.character.id}`);
-        // setSelectedMarkerFile(`/api/marker/${props.character.id}`);
         loadMarker(`/api/marker/${props.character.id}`);
     }
     useEffect(getMarker, [props.character.id]);
